@@ -15,12 +15,14 @@
   "main": "./dist/extension.js",
   "files": [
     "dist",
-    "LICENSE"
+    "LICENSE",
+    "assets/icon.png"
   ],
+  "icon": "assets/icon.png",
   "contributes": {
     "commands": [
       {
-        "command": "git-lfs-on-demand.pullFile",
+        "command": "git-lfs-on-demand.pull-file",
         "title": "Git LFS: Pull Current File"
       }
     ]
