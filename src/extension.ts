@@ -87,6 +87,18 @@ function getGitRoot(filePath: string): string | null {
     }
 }
 
+function updateIndex(relPath: string, gitRoot: string): void {
+    exec(`git update-index -- "${relPath}"`, { cwd: gitRoot }, (err, _stdout, stderr) => {
+        if (err) {
+            if (err.code === 128 && stderr.includes('.git/index.lock')) {
+                setTimeout(() => updateIndex(relPath, gitRoot), 100);
+            } else {
+                output.appendLine(`Warning: update-index failed for ${relPath}`);
+            }
+        }
+    });
+}
+
 function executePull(filePath: string, gitRoot: string): void {
     const relPath = path.relative(gitRoot, filePath);
     output.appendLine(`Pulling: ${relPath}`);
@@ -96,6 +108,7 @@ function executePull(filePath: string, gitRoot: string): void {
             pulledFiles.delete(filePath);
             output.appendLine(`Failed: ${relPath} - ${stderr || error.message}`);
         } else {
+            updateIndex(relPath, gitRoot);
             output.appendLine(`Done: ${relPath}`);
         }
 
