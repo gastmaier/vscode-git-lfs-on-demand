@@ -2,7 +2,7 @@
   "name": "git-lfs-on-demand",
   "displayName": "Git LFS On-Demand",
   "description": "Pull Git LFS files on demand when opened",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "gastmaier",
   "repository": {
     "type": "git",
