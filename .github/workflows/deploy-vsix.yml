@@ -1,0 +1,73 @@
+on:
+  workflow_call:
+    inputs:
+      asset_alias_name:
+        required: true
+        type: string
+      asset_path:
+        required: true
+        type: string
+      new_tag:
+        required: true
+        type: string
+      tag:
+        required: true
+        type: string
+    secrets:
+      VSCE_TOKEN:
+        required: false
+      OVSX_TOKEN:
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    if: ${{ inputs.new_tag == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/download-artifact@v5
+      with:
+        name: dist
+        path: .
+
+    - name: Publish VSCode
+      env:
+        VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
+      if: ${{ env.VSCE_TOKEN != '' }}
+      run: |
+        npm install -g @vscode/vsce
+        vsce publish --packagePath *.vsix -p ${{ secrets.VSCE_TOKEN }}
+
+    - name: Publish Open VSX Registry
+      env:
+        OVSX_TOKEN: ${{ secrets.OVSX_TOKEN }}
+      if: ${{ env.OVSX_TOKEN != '' }}
+      run: |
+        npm install -g ovsx
+        ovsx publish *.vsix -p ${{ secrets.OVSX_TOKEN }}
+
+    - name: Create git tag
+      run: |
+        curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -L -o github-api.sh \
+          https://raw.githubusercontent.com/analogdevicesinc/doctools/refs/heads/main/ci/github-api.sh
+        source ./github-api.sh
+        gh-create-tag ${{ secrets.GITHUB_TOKEN }} \
+                      ${{ github.repository }} \
+                      ${{ inputs.tag }} \
+                      ${{ github.sha }}
+
+        release_id=$(
+          gh-create-release ${{ secrets.GITHUB_TOKEN }} \
+                            ${{ github.repository }} \
+                            ${{ inputs.tag }} \
+                            new_tag_release_id
+        )
+
+        gh-upload-asset ${{ secrets.GITHUB_TOKEN }} \
+                        ${{ github.repository }} \
+                        $release_id \
+                        ${{ inputs.asset_alias_name }} \
+                        ${{ inputs.asset_path }}
