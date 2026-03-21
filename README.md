@@ -30,9 +30,11 @@ Manual pull: Command Palette -> "Git LFS: Pull Current File"
 GitHub Enterprise Managed Users (EMU) may not be able to download Git LFS objects from public repositories. EMU accounts can be configured to be restricted to enterprise resources and to not authenticate to external LFS servers.
 Use another, non-EMU, credential.
 
+## Get
+
+[Open VSX Registry](https://open-vsx.org/extension/gastmaier/git-lfs-on-demand) or
+[Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=gastmaier.git-lfs-on-demand)
+
 ## Build
 
-```
-make build
-make install
-```
+See the ./Makefile and/or ./.github/workflows.
