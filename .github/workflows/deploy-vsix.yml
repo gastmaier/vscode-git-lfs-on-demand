@@ -39,7 +39,7 @@ jobs:
       if: ${{ env.VSCE_TOKEN != '' }}
       run: |
         npm install -g @vscode/vsce
-        vsce publish --packagePath *.vsix -p ${{ secrets.VSCE_TOKEN }}
+        vsce publish --packagePath "${{ inputs.asset_path }}" -p ${{ secrets.VSCE_TOKEN }}
 
     - name: Publish Open VSX Registry
       env:
@@ -47,7 +47,7 @@ jobs:
       if: ${{ env.OVSX_TOKEN != '' }}
       run: |
         npm install -g ovsx
-        ovsx publish *.vsix -p ${{ secrets.OVSX_TOKEN }}
+        ovsx publish "${{ inputs.asset_path }}" -p ${{ secrets.OVSX_TOKEN }}
 
     - name: Create git tag
       run: |
